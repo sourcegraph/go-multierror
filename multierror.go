@@ -79,7 +79,12 @@ func (e *Error) Unwrap() error {
 	// Shallow copy the slice
 	errs := make([]error, len(e.Errors))
 	copy(errs, e.Errors)
-	return chain{errs: errs, format: e.ErrorFormat}
+
+	formatFn := e.ErrorFormat
+	if formatFn == nil {
+		formatFn = ListFormatFunc
+	}
+	return chain{errs: errs, format: formatFn}
 }
 
 // chain implements the interfaces necessary for errors.Is/As/Unwrap to
