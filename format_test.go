@@ -21,8 +21,7 @@ func TestListFormatFuncSingle(t *testing.T) {
 func TestListFormatFuncMultiple(t *testing.T) {
 	expected := `2 errors occurred:
 	* foo
-	* bar
-`
+	* bar`
 
 	errors := []error{
 		errors.New("foo"),
