@@ -79,7 +79,7 @@ func (e *Error) Unwrap() error {
 	// Shallow copy the slice
 	errs := make([]error, len(e.Errors))
 	copy(errs, e.Errors)
-	return chain(errs)
+	return chain{errs: errs, format: e.ErrorFormat}
 }
 
 // chain implements the interfaces necessary for errors.Is/As/Unwrap to
@@ -93,29 +93,35 @@ func (e *Error) Unwrap() error {
 // Is/As to get the correct error type out.
 //
 // Precondition: []error is non-empty (len > 0)
-type chain []error
+type chain struct {
+	errs   []error
+	format ErrorFormatFunc
+}
 
 // Error implements the error interface
 func (e chain) Error() string {
-	return e[0].Error()
+	return e.format(e.errs)
 }
 
 // Unwrap implements errors.Unwrap by returning the next error in the
 // chain or nil if there are no more errors.
 func (e chain) Unwrap() error {
-	if len(e) == 1 {
+	if len(e.errs) == 1 {
 		return nil
 	}
 
-	return e[1:]
+	return &chain{
+		errs:   e.errs[1:],
+		format: e.format,
+	}
 }
 
 // As implements errors.As by attempting to map to the current value.
 func (e chain) As(target interface{}) bool {
-	return errors.As(e[0], target)
+	return errors.As(e.errs[0], target)
 }
 
 // Is implements errors.Is by comparing the current value directly.
 func (e chain) Is(target error) bool {
-	return errors.Is(e[0], target)
+	return errors.Is(e.errs[0], target)
 }
