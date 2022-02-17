@@ -22,7 +22,6 @@ func TestListFormatFuncMultiple(t *testing.T) {
 	expected := `2 errors occurred:
 	* foo
 	* bar
-
 `
 
 	errors := []error{

@@ -22,6 +22,6 @@ func ListFormatFunc(es []error) string {
 	}
 
 	return fmt.Sprintf(
-		"%d errors occurred:\n\t%s\n\n",
+		"%d errors occurred:\n\t%s\n",
 		len(es), strings.Join(points, "\n\t"))
 }
